@@ -27,6 +27,7 @@ powinna zostać zakończona, a pracuje tylko ta ostatnio uruchomiona.
  
 int main(int argc, char **argv, char **envp)
 {
+    /*
     if(argc <= 1)
     {
         printf("Program zakonczyl sie bez argumentow.\n");
@@ -40,6 +41,7 @@ int main(int argc, char **argv, char **envp)
     }
     else
     {
+        */
         for (int i = 1; i < argc; i++)
         {
             pid_t id = fork();
@@ -50,7 +52,8 @@ int main(int argc, char **argv, char **envp)
             }
             printf("%d\n", id);
         }
+        /*
     }
-
+    */
     return 0;
 }
