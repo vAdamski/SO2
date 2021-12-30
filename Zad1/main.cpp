@@ -21,13 +21,17 @@ powinna zostać zakończona, a pracuje tylko ta ostatnio uruchomiona.
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <string.h>
 
-
+int cloneFunc(void *args)
+{
+    std::cout << "Clone: " <<(char*)args << std::endl;
+    return 0;
+}
  
 int main(int argc, char **argv, char **envp)
 {
-    /*
     if(argc <= 1)
     {
         printf("Program zakonczyl sie bez argumentow.\n");
@@ -36,24 +40,27 @@ int main(int argc, char **argv, char **envp)
 
     if(strcmp(argv[1], "c") == 0)
     {
-        clone()
+        void* space = malloc(1024);
+
+        for(int i = 2; i < argc; i++)
+        {
+            pid_t pid = clone(cloneFunc, space, CLONE_PARENT | SIGCHLD, (void*)argv[i]);
+            //printf("Clone pid: %d\n", pid);
+        }
+        
         return 0;
     }
     else
     {
-        */
         for (int i = 1; i < argc; i++)
         {
             pid_t id = fork();
             if(id == 0)
             {
-                printf("%s\n", argv[i]);
+                printf("Fork: %s\n", argv[i]);
                 return 0;
             }
-            printf("%d\n", id);
         }
-        /*
     }
-    */
     return 0;
 }
