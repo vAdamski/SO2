@@ -10,7 +10,8 @@
 			"ostream": "cpp",
 			"*.tcc": "cpp",
 			"iosfwd": "cpp",
-			"fstream": "cpp"
+			"fstream": "cpp",
+			"xstring": "cpp"
 		}
 	}
 }
