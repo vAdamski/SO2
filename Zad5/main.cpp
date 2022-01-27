@@ -17,3 +17,76 @@ wątek nr 1, oczekuje na to wątek nr 2, po którego zakończeniu kończy się w
 Pamiętaj, że dostarczony kod może zawierać błędy, uważnie go przeanalizuj i uporządkuj. Rozważ zastosowanie jednego z
 mechanizmów/algorytmu poznanych na wykładzie, np. algorytmu Lamporata czy odpowiednio skonfigurowanego semafora…
 */
+
+#include <iostream>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+
+using namespace std;
+
+void* threadFunc(void *arg)
+{
+    int *idThread = arg;
+
+    cout << "Thread number " << idThread << "is running" << endl;
+    sleep(1);
+
+    return;
+}
+
+int main(int argc, char **argv, char **envp)
+{
+    int countOfThreads = stoi(argv[1]);
+
+    if (argc != 3 || countOfThreads <= 0)
+    {
+        cout << "Bad input data" << endl;
+    }
+
+    if (strcmp(argv[2], "inc") == 0)
+    {
+        cout << "INC" << endl;
+    }
+    else if (strcmp(argv[2], "dec") == 0)
+    {
+        cout << "DEC" << endl;
+    }
+    else
+    {
+        cout << "Bad input data" << endl;
+    }
+
+    int queue[countOfThreads];
+
+    //Initialize queue
+    for (int i = 0; i < countOfThreads - 1; i++)
+    {
+        queue[i] = i;
+    }
+
+    //Show queue
+    cout << "--==QUEUE==--" << endl;
+    for (int i = 0; i < countOfThreads - 1; i++)
+    {
+        cout << i << "." << queue[i] << endl;
+    }
+
+    for (int i = 0; i < countOfThreads - 1; i++)
+    {
+        cout << "Run thread number: " << i << endl;
+
+        pthread_t IdThread;
+
+        int error;
+
+        error = pthread_create(&IdThread, NULL, threadFunc, &i);
+        error = pthread_join(IdThread, NULL);
+
+        cout << "Run thread number " << i << "has been end." << endl;
+    }
+
+    return 0;
+}

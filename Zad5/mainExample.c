@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdatomic.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 const uint8_t MIN_THREAD = 0;
 #define MAX_THREAD 3
@@ -73,7 +74,7 @@ void* foo(void *argumenty) {
 	
 	//pthread_detach(pthread_self());
 	sleep(1);
-	printf("W¹tek nr %d, ma miejsce w kolejce nr %d\n", (TD_lokalny.number), (TD_lokalny.queue));
+	printf("Wï¿½tek nr %d, ma miejsce w kolejce nr %d\n", (TD_lokalny.number), (TD_lokalny.queue));
 	pthread_mutex_unlock(&start_mutex);
 	
 	//if((IN_REG1 & 2) && IN_REG1 & 0x01)
@@ -90,6 +91,6 @@ void* foo(void *argumenty) {
 		return 0;
 	pthread_exit(NULL);
 
-	//po przejœciu spin_locka
+	//po przejï¿½ciu spin_locka
 }
 
