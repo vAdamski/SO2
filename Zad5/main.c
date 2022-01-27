@@ -18,75 +18,102 @@ Pamiętaj, że dostarczony kod może zawierać błędy, uważnie go przeanalizuj
 mechanizmów/algorytmu poznanych na wykładzie, np. algorytmu Lamporata czy odpowiednio skonfigurowanego semafora…
 */
 
-#include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <stdatomic.h>
+#include <stdio.h>
 
-using namespace std;
+_Atomic int globalId;
+int flag; //0 -> inc / 1 -> dec
+pthread_mutex_t mutex;
+
+struct threadInfo
+{
+    pthread_t ThreadId;
+    int numerek;
+};
 
 void* threadFunc(void *arg)
 {
-    int *idThread = arg;
+    struct threadInfo *threadInf = arg;
 
-    cout << "Thread number " << idThread << "is running" << endl;
+    //START CS
+    pthread_mutex_lock(&mutex);
+
+    printf("Wykonuje sie watek = %d\n", threadInf->numerek);
+
+    pthread_mutex_unlock(&mutex);
+    //END CS
+
+    while(threadInf->numerek != globalId)
+    {
+        //Waitng
+    }
+
+    printf("Zakonczyl sie watek nr = %d\n", threadInf->numerek);
+
+    if (flag == 0)
+    {
+        globalId++;
+    }
+    else if (flag == 1)
+    {
+        globalId--;
+    }
+
     sleep(1);
 
-    return;
+    return NULL;
 }
 
 int main(int argc, char **argv, char **envp)
 {
-    int countOfThreads = stoi(argv[1]);
+    long countOfThreads = strtol(argv[1], NULL, 10);
 
     if (argc != 3 || countOfThreads <= 0)
     {
-        cout << "Bad input data" << endl;
+        // cout << "Bad input data" << endl;
     }
 
     if (strcmp(argv[2], "inc") == 0)
     {
-        cout << "INC" << endl;
+        globalId = 0;
+        flag = 0;
     }
     else if (strcmp(argv[2], "dec") == 0)
     {
-        cout << "DEC" << endl;
+        globalId = countOfThreads - 1;
+        flag = 1;
     }
     else
     {
-        cout << "Bad input data" << endl;
+        // cout << "Bad input data" << endl;
     }
 
-    int queue[countOfThreads];
+    struct threadInfo *threadInf = malloc(sizeof(struct threadInfo) * countOfThreads);
+    pthread_mutex_init(&mutex, NULL);
 
     //Initialize queue
-    for (int i = 0; i < countOfThreads - 1; i++)
+    for (int i = 0; i < countOfThreads; i++)
     {
-        queue[i] = i;
-    }
-
-    //Show queue
-    cout << "--==QUEUE==--" << endl;
-    for (int i = 0; i < countOfThreads - 1; i++)
-    {
-        cout << i << "." << queue[i] << endl;
-    }
-
-    for (int i = 0; i < countOfThreads - 1; i++)
-    {
-        cout << "Run thread number: " << i << endl;
-
         pthread_t IdThread;
-
         int error;
 
-        error = pthread_create(&IdThread, NULL, threadFunc, &i);
-        error = pthread_join(IdThread, NULL);
+        (threadInf + i)->numerek = i;
 
-        cout << "Run thread number " << i << "has been end." << endl;
+        error = pthread_create(&threadInf->ThreadId, NULL, threadFunc, &threadInf[i]);
     }
+
+    for (int i = 0; i < countOfThreads; i++)
+    {
+        pthread_join(threadInf[i].ThreadId, NULL);
+    }
+    
 
     return 0;
 }
