@@ -21,7 +21,6 @@ To samo ale na WinAPI
 */
 
 #include <windows.h>
-#include <tchar.h>
 #include <strsafe.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,13 +42,19 @@ int main(int argc, char **argv, char **envp)
 {
     long countOfThreads;
 
-    if (argc != 3 || countOfThreads <= 0)
+    if (argc != 3)
     {
         printf("Bad input data");
         exit(0);
     }
 
     countOfThreads = strtol(argv[1], NULL, 10);
+
+    if(countOfThreads  <= 0)
+    {
+        printf("Bad input data");
+        exit(0);
+    }
 
     if (strcmp(argv[2], "inc") == 0)
     {
@@ -77,8 +82,6 @@ int main(int argc, char **argv, char **envp)
     //Initialize queue
     for (int i = 0; i < countOfThreads; i++)
     {
-        //DWORD IdThread;
-
         (threadInf + i)->numerek = i;
 
         *(hThreadArray + i) = CreateThread(
@@ -88,9 +91,7 @@ int main(int argc, char **argv, char **envp)
                 &threadInf[i],
                 0,
                 &(threadInf+i)->ThreadId
-                );
-
-        //error = pthread_create(&threadInf->ThreadId, NULL, threadFunc, &threadInf[i]);
+        );
     }
 
     for (int i = 0; i < countOfThreads; i++)
@@ -119,7 +120,7 @@ DWORD WINAPI MyThreadFunction( LPVOID arg )
         //Waitng
     }
 
-    printf("Zakonczyl sie watek nr = %d\n", threadInf->numerek);
+    printf("Zakonczyl sie watek nr = %d\n", (int)threadInf->numerek);
 
     if (flag == 0)
     {
@@ -129,6 +130,8 @@ DWORD WINAPI MyThreadFunction( LPVOID arg )
     {
         globalId--;
     }
+
+    Sleep(1000);
 }
 
 
