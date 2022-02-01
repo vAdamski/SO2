@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdatomic.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 const uint8_t MIN_THREAD = 0;
 #define MAX_THREAD 3
