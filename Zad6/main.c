@@ -97,7 +97,16 @@ int main(int argc, char **argv, char **envp)
     for (int i = 0; i < countOfThreads; i++)
     {
         WaitForSingleObject(hThreadArray+i, INFINITE);
+        Sleep(100);
     }
+
+    for (int i = 0; i < countOfThreads; i++)
+    {
+        CloseHandle(hThreadArray+i);
+    }
+
+    free(threadInf);
+    CloseHandle(ghMutex);
 }
 
 DWORD WINAPI MyThreadFunction( LPVOID arg )
@@ -117,7 +126,7 @@ DWORD WINAPI MyThreadFunction( LPVOID arg )
 
     while(threadInf->numerek != globalId)
     {
-        //Waitng
+        Sleep(100);
     }
 
     printf("Zakonczyl sie watek nr = %d\n", (int)threadInf->numerek);
